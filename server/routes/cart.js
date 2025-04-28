@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const authenticateToken = require("../middleware/auth");
 const User = require("../models/User");
 const Product = require("../models/Product");
+const authMiddleware = require("../middleware/auth");
 
-router.use(authenticateToken);
+router.use(authMiddleware);
 
 // Middleware to get user from token
 const getUser = async (req, res, next) => {
@@ -21,13 +21,9 @@ const getUser = async (req, res, next) => {
 };
 
 // Get cart
-router.get("/", authenticateToken, async (req, res) => {
+router.get("/", getUser, async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).populate("cart.product");
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
+    const user = await User.findById(req.user._id).populate("cart.product");
     res.json(user.cart);
   } catch (error) {
     res.status(500).json({ message: error.message });

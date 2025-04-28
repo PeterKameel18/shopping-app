@@ -32,22 +32,50 @@ const ProductsScreen = ({ navigation }) => {
 
   const generatePDF = async () => {
     try {
+      setLoading(true);
+
+      // Fetch cart data from the backend
+      const response = await cart.get();
+      const cartData = response.data;
+
+      // Generate HTML content for the PDF
       const htmlContent = `
         <h1>Cart Summary</h1>
         <ul>
-          <li>Product: Example Product</li>
-          <li>Price: $10.00</li>
-          <li>Quantity: 2</li>
-          <li>Total: $20.00</li>
+          ${cartData
+            .map(
+              (item) => `
+            <li>
+              <strong>Product:</strong> ${item.product.name}<br />
+              <strong>Price:</strong> $${item.product.price.toFixed(2)}<br />
+              <strong>Quantity:</strong> ${item.quantity}<br />
+              <strong>Total:</strong> $${(
+                item.product.price * item.quantity
+              ).toFixed(2)}<br />
+            </li>
+          `
+            )
+            .join("")}
         </ul>
       `;
 
-      const { uri } = await Print.printToFileAsync({ html: htmlContent });
-      console.log("PDF saved to:", uri);
-      Alert.alert("PDF Saved", `PDF has been saved to: ${uri}`);
+      // Generate the PDF
+      const options = {
+        html: htmlContent,
+        fileName: `CartSummary_${new Date().toISOString().slice(0, 10)}`,
+        directory: "Documents",
+      };
+
+      const file = await RNHTMLtoPDF.convert(options);
+
+      console.log("PDF File Path:", file.filePath);
+
+      Alert.alert("PDF Saved", `PDF has been saved to: ${file.filePath}`);
     } catch (error) {
       console.error("Error generating PDF:", error);
       Alert.alert("Error", "Failed to generate PDF.");
+    } finally {
+      setLoading(false);
     }
   };
 

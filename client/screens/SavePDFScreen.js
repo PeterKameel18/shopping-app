@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Button, Alert } from "react-native";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
-import { cart } from "../services/api";
+import { orders } from "../services/api";
 
 const SavePDFScreen = () => {
   const [loading, setLoading] = useState(false);
@@ -10,22 +10,23 @@ const SavePDFScreen = () => {
     try {
       setLoading(true);
 
-      // Fetch cart data from the backend
-      const response = await cart.get();
-      const cartData = response.data;
+      // Fetch order data from the backend
+      const response = await orders.getAll();
+      const ordersData = response.data;
 
       // Generate HTML content for the PDF
       const htmlContent = `
-        <h1>Cart Summary</h1>
+        <h1>Order Summary</h1>
         <ul>
-          ${cartData
+          ${ordersData
             .map(
-              (item) => `
+              (order) => `
             <li>
-              <strong>Product:</strong> ${item.product.name}<br />
-              <strong>Price:</strong> $${item.product.price.toFixed(2)}<br />
-              <strong>Quantity:</strong> ${item.quantity}<br />
-              <strong>Total:</strong> $${(item.product.price * item.quantity).toFixed(2)}<br />
+              <strong>Order ID:</strong> ${order._id}<br />
+              <strong>Total Amount:</strong> $${order.totalAmount.toFixed(
+                2
+              )}<br />
+              <strong>Status:</strong> ${order.orderStatus}<br />
             </li>
           `
             )
@@ -36,7 +37,7 @@ const SavePDFScreen = () => {
       // Create the PDF
       const options = {
         html: htmlContent,
-        fileName: "CartSummary",
+        fileName: "OrderSummary",
         directory: "Documents",
       };
 
@@ -54,7 +55,7 @@ const SavePDFScreen = () => {
   return (
     <View style={styles.container}>
       <Button
-        title={loading ? "Generating PDF..." : "Save Cart as PDF"}
+        title={loading ? "Generating PDF..." : "Save Orders as PDF"}
         onPress={generatePDF}
         disabled={loading}
       />
