@@ -12,6 +12,7 @@ import ProductDetailScreen from "./screens/ProductDetailScreen";
 import CartScreen from "./screens/CartScreen";
 import CheckoutScreen from "./screens/CheckoutScreen";
 import OrderConfirmationScreen from "./screens/OrderConfirmationScreen";
+import SavePDFScreen from "./screens/SavePDFScreen"; // Import SavePDFScreen
 
 const Stack = createStackNavigator();
 
@@ -58,6 +59,11 @@ export default function App() {
               name="OrderConfirmation"
               component={OrderConfirmationScreen}
               options={{ title: "Order Confirmation" }}
+            />
+            <Stack.Screen
+              name="SavePDFScreen"
+              component={SavePDFScreen}
+              options={{ title: "Save PDF" }}
             />
           </Stack.Navigator>
         </NavigationContainer>

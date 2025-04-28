@@ -1,17 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, ScrollView, Image } from "react-native";
 import { Text, Button, TextInput } from "react-native-paper";
 import { cart } from "../services/api";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // For secure storage
 
 const ProductDetailScreen = ({ route, navigation }) => {
   const { product } = route.params;
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [userToken, setUserToken] = useState(route.params?.userToken || null);
+
+  // Retrieve userToken if not passed in route.params
+  useEffect(() => {
+    const fetchToken = async () => {
+      if (!userToken) {
+        const token = await AsyncStorage.getItem("userToken"); // Retrieve token from storage
+        setUserToken(token || "default-token"); // Use default if token is not found
+      }
+    };
+    fetchToken();
+  }, [userToken]);
 
   const handleAddToCart = async () => {
     try {
       setLoading(true);
       await cart.add(product._id, quantity);
+      await AsyncStorage.setItem("userToken", "actual-user-token");
       navigation.navigate("Cart");
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -54,6 +68,15 @@ const ProductDetailScreen = ({ route, navigation }) => {
         >
           Add to Cart
         </Button>
+
+        <Button
+          title="Go to SavePDFScreen"
+          onPress={() =>
+            navigation.navigate("SavePDFScreen", {
+              userToken: userToken, // Pass the retrieved or default token
+            })
+          }
+        />
       </View>
     </ScrollView>
   );
