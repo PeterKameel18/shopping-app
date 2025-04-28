@@ -68,15 +68,6 @@ const ProductDetailScreen = ({ route, navigation }) => {
         >
           Add to Cart
         </Button>
-
-        <Button
-          title="Go to SavePDFScreen"
-          onPress={() =>
-            navigation.navigate("SavePDFScreen", {
-              userToken: userToken, // Pass the retrieved or default token
-            })
-          }
-        />
       </View>
     </ScrollView>
   );
