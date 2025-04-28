@@ -59,6 +59,14 @@ const ProductsScreen = ({ navigation }) => {
         style={styles.searchBar}
       />
 
+      <Button
+        mode="contained"
+        onPress={() => navigation.navigate("SavePDF")}
+        style={{ margin: 10 }}
+      >
+        Save Orders as PDF
+      </Button>
+
       {error ? (
         <Text style={{ color: "red", textAlign: "center" }}>{error}</Text>
       ) : null}

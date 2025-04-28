@@ -3,6 +3,7 @@ const router = express.Router();
 const Order = require("../models/Order");
 const User = require("../models/User");
 const Product = require("../models/Product");
+const authenticateToken = require("../middleware/auth");
 
 // Middleware to get user from token
 const getUser = async (req, res, next) => {
@@ -19,9 +20,9 @@ const getUser = async (req, res, next) => {
 };
 
 // Get all orders
-router.get("/", getUser, async (req, res) => {
+router.get("/", authenticateToken, getUser, async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user._id })
+    const orders = await Order.find({ user: req.user.userId })
       .populate("items.product")
       .sort("-createdAt");
     res.json(orders);
@@ -31,11 +32,11 @@ router.get("/", getUser, async (req, res) => {
 });
 
 // Get order by ID
-router.get("/:id", getUser, async (req, res) => {
+router.get("/:id", authenticateToken, getUser, async (req, res) => {
   try {
     const order = await Order.findOne({
       _id: req.params.id,
-      user: req.user._id,
+      user: req.user.userId,
     }).populate("items.product");
 
     if (!order) {
