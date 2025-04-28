@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Button, Alert } from "react-native";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
-import { products } from "../services/api";
+import { cart } from "../services/api";
 
 const SavePDFScreen = () => {
   const [loading, setLoading] = useState(false);
@@ -10,21 +10,22 @@ const SavePDFScreen = () => {
     try {
       setLoading(true);
 
-      // Fetch products data from the backend
-      const response = await products.getAll();
-      const productsData = response.data;
+      // Fetch cart data from the backend
+      const response = await cart.get();
+      const cartData = response.data;
 
       // Generate HTML content for the PDF
       const htmlContent = `
-        <h1>Available Products</h1>
+        <h1>Cart Summary</h1>
         <ul>
-          ${productsData
+          ${cartData
             .map(
-              (product) => `
+              (item) => `
             <li>
-              <strong>Name:</strong> ${product.name}<br />
-              <strong>Price:</strong> $${product.price.toFixed(2)}<br />
-              <strong>Description:</strong> ${product.description}<br />
+              <strong>Product:</strong> ${item.product.name}<br />
+              <strong>Price:</strong> $${item.product.price.toFixed(2)}<br />
+              <strong>Quantity:</strong> ${item.quantity}<br />
+              <strong>Total:</strong> $${(item.product.price * item.quantity).toFixed(2)}<br />
             </li>
           `
             )
@@ -35,7 +36,7 @@ const SavePDFScreen = () => {
       // Create the PDF
       const options = {
         html: htmlContent,
-        fileName: "AvailableProducts",
+        fileName: "CartSummary",
         directory: "Documents",
       };
 
@@ -53,7 +54,7 @@ const SavePDFScreen = () => {
   return (
     <View style={styles.container}>
       <Button
-        title={loading ? "Generating PDF..." : "Save Products as PDF"}
+        title={loading ? "Generating PDF..." : "Save Cart as PDF"}
         onPress={generatePDF}
         disabled={loading}
       />

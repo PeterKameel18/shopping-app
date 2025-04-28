@@ -63,7 +63,7 @@ export default function App() {
             <Stack.Screen
               name="SavePDF"
               component={SavePDFScreen}
-              options={{ title: "Save PDF" }}
+              options={{ title: "Save Cart as PDF" }}
             />
           </Stack.Navigator>
         </NavigationContainer>
